@@ -1,1 +1,0 @@
-# markusciernia-blip.github.io

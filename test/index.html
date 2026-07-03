@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b42c8">
+  <meta name="description" content="FitTrack Test-App mit lokaler Offline-Datenspeicherung.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FitTrack">
+  <title>FitTrack Test-App</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./styles.css?v=2">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">FT</div><div><strong>FitTrack</strong><small>Lokale Test-App</small></div></div>
+  <div class="top-actions"><span id="connectionStatus" class="status">Online</span><button id="installButton" class="secondary small" hidden>Installieren</button><button id="openEntryTop" class="small">+ Erfassen</button></div>
+</header>
+<div class="privacy"><strong>Privat:</strong> Eingaben bleiben im Browser des jeweiligen Testers. Keine Synchronisierung, keine Serverübertragung.</div>
+
+<main>
+  <section class="screen active" data-screen="overview">
+    <div class="page-head"><div><p class="eyebrow">Übersicht</p><h1>Hallo, <span id="profileName">Jenny</span> 👋</h1><p>Trends statt Druck – deine Werte im Zusammenhang.</p></div><div class="period-switch" id="periodSwitch"><button data-period="today">Tag</button><button data-period="week">Woche</button><button data-period="month" class="active">Monat</button><button data-period="all">Gesamt</button></div></div>
+    <div class="summary-grid">
+      <article class="summary primary"><span>Kalorienbilanz</span><strong id="summaryBalance">–</strong><small id="summaryDays">–</small></article>
+      <article class="summary"><span>Aufnahme</span><strong id="summaryIntake">–</strong><small>im Zeitraum</small></article>
+      <article class="summary"><span>TDEE</span><strong id="summaryTdee">–</strong><small>im Zeitraum</small></article>
+      <article class="summary"><span>Ø Gewicht</span><strong id="summaryWeight">–</strong><small id="summaryWeightChange">–</small></article>
+    </div>
+    <div class="section-head"><div><p class="eyebrow">Dein Fokus</p><h2>Bis zu drei Werte</h2></div><button id="editFocus" class="secondary small">Anpassen</button></div>
+    <div id="focusCards" class="focus-grid"></div>
+    <div class="two-col">
+      <article class="panel"><div class="panel-head"><div><p class="eyebrow">Energie</p><h2>Letzte 14 Einträge</h2></div></div><canvas id="overviewBalanceChart"></canvas><p class="muted">Grün = Aufnahme unter TDEE, Rot = Aufnahme über TDEE.</p></article>
+      <article class="panel"><div class="panel-head"><div><p class="eyebrow">Letzter Eintrag</p><h2 id="latestDate">–</h2></div><button id="editLatest" class="text-btn">Bearbeiten</button></div><div id="latestMetrics" class="metric-list"></div><p id="latestNote" class="muted"></p></article>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="nutrition">
+    <div class="page-head"><div><p class="eyebrow">Ernährung</p><h1>Aufnahme und Ziele</h1><p>Protein, Ballaststoffe und Energiebilanz im Verlauf.</p></div><button class="open-entry">+ Essen & Tag erfassen</button></div>
+    <div class="summary-grid three">
+      <article class="summary"><span>Ø Protein</span><strong id="nutritionProtein">–</strong><small>Ziel: 140 g</small></article>
+      <article class="summary"><span>Ø Ballaststoffe</span><strong id="nutritionFiber">–</strong><small>Ziel: 30 g</small></article>
+      <article class="summary"><span>Ø Aufnahme</span><strong id="nutritionIntake">–</strong><small id="nutritionPeriodLabel">Alle Einträge</small></article>
+    </div>
+    <article class="panel"><div class="panel-head"><h2>Tagesprotokoll</h2><div class="inline-controls"><select id="nutritionPeriod"><option value="all">Alle Daten</option><option value="7">Letzte 7 Einträge</option><option value="30">Letzte 30 Einträge</option></select><input id="nutritionSearch" type="search" placeholder="Datum oder Notiz"></div></div><div class="table-scroll"><table><thead><tr><th>Datum</th><th>Aufnahme</th><th>TDEE</th><th>Bilanz</th><th>Protein</th><th>Ballaststoffe</th><th>Aktion</th></tr></thead><tbody id="nutritionRows"></tbody></table></div></article>
+  </section>
+
+  <section class="screen" data-screen="training">
+    <div class="page-head"><div><p class="eyebrow">Training</p><h1>Aktivität dokumentieren</h1><p>Trainingszeit, Art und Notizen lokal speichern.</p></div><button class="open-entry">+ Training erfassen</button></div>
+    <div class="summary-grid three"><article class="summary"><span>Trainingseinträge</span><strong id="trainingCount">0</strong><small>mit Minuten oder Art</small></article><article class="summary"><span>Gesamtminuten</span><strong id="trainingMinutes">0</strong><small>alle Einträge</small></article><article class="summary"><span>Ø Schritte</span><strong id="trainingSteps">–</strong><small>alle Tage</small></article></div>
+    <article class="panel"><h2>Trainingsverlauf</h2><div id="trainingList" class="training-list"></div><div id="trainingEmpty" class="empty">Noch keine Trainingsdetails erfasst. Öffne „Training erfassen“ und ergänze Art oder Dauer.</div></article>
+  </section>
+
+  <section class="screen" data-screen="progress">
+    <div class="page-head"><div><p class="eyebrow">Fortschritt</p><h1>Trends erkennen</h1><p>Gewicht und Energie über alle vorhandenen Einträge.</p></div></div>
+    <div class="two-col"><article class="panel"><h2>Gewichtsverlauf</h2><canvas id="weightChart"></canvas><p id="weightTrend" class="muted"></p></article><article class="panel"><h2>Energiebilanz</h2><canvas id="balanceChart"></canvas><p class="muted">Einzelne Tage schwanken. Entscheidend ist der Verlauf.</p></article></div>
+    <article class="panel"><div class="panel-head"><h2>Wochenübersicht</h2><span id="progressCount" class="pill">0 Einträge</span></div><div id="weekList" class="week-list"></div></article>
+  </section>
+
+  <section class="screen" data-screen="more">
+    <div class="page-head"><div><p class="eyebrow">Mehr</p><h1>Einstellungen und Backup</h1><p>Profil, Fokus, Import und Export.</p></div></div>
+    <div class="settings-grid">
+      <article class="panel"><h2>Profil</h2><label>Anzeigename<input id="nameInput" maxlength="40"></label><button id="saveName">Lokal speichern</button><p id="nameStatus" class="status-text"></p></article>
+      <article class="panel"><h2>Dashboard-Fokus</h2><p class="muted">Wähle maximal drei Werte.</p><div id="focusSettings" class="focus-settings"></div></article>
+      <article class="panel"><h2>Backup</h2><p class="muted">JSON zur Wiederherstellung, CSV für Excel.</p><div class="stack"><button id="exportJson">JSON-Backup</button><button id="exportCsv" class="secondary">CSV-Datei</button></div></article>
+      <article class="panel"><h2>Wiederherstellen</h2><label>JSON-Datei<input id="importFile" type="file" accept=".json,application/json"></label><button id="importJson">Importieren</button><p id="importStatus" class="status-text"></p></article>
+      <article class="panel danger-panel"><h2>Lokale Daten löschen</h2><p class="muted">Nur für diesen Browser. Vorher Backup erstellen.</p><button id="clearData" class="danger">Alle lokalen Daten löschen</button></article>
+      <article class="panel"><h2>Datenbasis</h2><p id="dataInfo" class="muted"></p><p class="muted">TDEE = Gesamtenergieverbrauch; Bilanz = Aufnahme minus TDEE.</p></article>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom-nav" aria-label="Hauptnavigation">
+  <button class="active" data-target="overview"><span>⌂</span>Übersicht</button>
+  <button data-target="nutrition"><span>◴</span>Ernährung</button>
+  <button data-target="training"><span>🏋</span>Training</button>
+  <button data-target="progress"><span>⌁</span>Fortschritt</button>
+  <button data-target="more"><span>•••</span>Mehr</button>
+</nav>
+
+<dialog id="entryDialog">
+  <form id="entryForm" method="dialog">
+    <div class="dialog-head"><div><p class="eyebrow">Lokale Eingabe</p><h2 id="entryTitle">Tag erfassen</h2></div><button type="button" class="secondary small" data-close="entryDialog">Schließen</button></div>
+    <div class="form-grid">
+      <label>Datum *<input id="dateInput" type="date" required></label>
+      <label>Gewicht (kg)<input id="weightInput" type="number" step="0.1" min="20" max="400"></label>
+      <label>Kalorienaufnahme *<input id="intakeInput" type="number" min="0" max="20000" required></label>
+      <label>TDEE *<input id="tdeeInput" type="number" min="0" max="20000" required></label>
+      <label>Protein (g)<input id="proteinInput" type="number" step="0.1" min="0"></label>
+      <label>Ballaststoffe (g)<input id="fiberInput" type="number" step="0.1" min="0"></label>
+      <label>Schritte<input id="stepsInput" type="number" min="0"></label>
+      <label>Wasser (Liter)<input id="waterInput" type="number" step="0.1" min="0"></label>
+      <label>Schlaf (Stunden)<input id="sleepInput" type="number" step="0.1" min="0" max="24"></label>
+      <label>Training (Minuten)<input id="trainingInput" type="number" min="0"></label>
+      <label>Trainingsart<input id="trainingTypeInput" maxlength="80" placeholder="z. B. Krafttraining"></label>
+    </div>
+    <label>Notiz<textarea id="noteInput" rows="3" maxlength="1000"></textarea></label>
+    <div class="live-balance"><span>Berechnete Bilanz</span><strong id="liveBalance">–</strong></div>
+    <div class="dialog-actions"><button type="button" class="secondary" id="deleteEntry" hidden>Eintrag löschen</button><span id="entryStatus" class="status-text"></span><button type="submit">Lokal speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="focusDialog"><div class="dialog-head"><div><p class="eyebrow">Dashboard</p><h2>Fokus auswählen</h2></div><button class="secondary small" data-close="focusDialog">Schließen</button></div><p class="muted">Maximal drei Karten.</p><div id="focusDialogSettings" class="focus-settings"></div></dialog>
+<dialog id="confirmDialog"><form method="dialog"><h2 id="confirmTitle">Löschen?</h2><p id="confirmText"></p><div class="dialog-actions"><button value="cancel" class="secondary">Abbrechen</button><button value="confirm" class="danger">Bestätigen</button></div></form></dialog>
+
+<script src="./seed-data.js?v=2"></script>
+<script src="./app.js?v=2"></script>
+</body></html>
