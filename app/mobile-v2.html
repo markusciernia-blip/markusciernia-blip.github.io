@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b42c8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Calvio">
+<title>Calvio</title>
+<link rel="stylesheet" href="./mobile-v2.css?v=1">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brandleft">
+      <div class="logo"><svg viewBox="0 0 100 100"><path d="M70 30a34 34 0 1 0 0 40" fill="none" stroke="#0b42c8" stroke-width="12" stroke-linecap="round"/><path d="M18 50h18l6-16 9 34 10-23h12l10-12" fill="none" stroke="#0854da" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 66c14-12 25-12 30-3-5 8-14 13-26 14z" fill="#18a957"/><rect x="8" y="47" width="16" height="6" rx="3" fill="#18a957"/><path d="M82 40v18M73 49h18" stroke="#e8512f" stroke-width="6" stroke-linecap="round"/></svg></div>
+      <div><b>Calvio</b><small>Fitness · Tracking · Nutrition</small></div>
+    </div>
+    <button id="back" class="secondary" hidden>←</button>
+  </div>
+</header>
+
+<main>
+<section id="home" class="screen on">
+  <div class="top"><div><h1>Dein Tag in Balance</h1><p id="periodText">Aktueller Zeitraum</p></div><button id="addToday">+ Heute</button></div>
+  <div id="period" class="period"><button data-p="day" class="on">Tag</button><button data-p="week">Woche</button><button data-p="month">Monat</button><button data-p="all">Gesamt</button></div>
+  <div class="grid stats">
+    <div class="card primary"><span>Kalorienbilanz</span><b id="sumBalance">–</b><small id="sumDays">–</small></div>
+    <div class="card"><span>Aufnahme Ø</span><b id="sumIntake">–</b><small>kcal</small></div>
+    <div class="card"><span>TDEE Ø</span><b id="sumTdee">–</b><small>kcal</small></div>
+    <div class="card"><span>Gewicht Ø</span><b id="sumWeight">–</b><small>kg</small></div>
+  </div>
+  <div class="panel" style="margin-top:10px"><h2>Weitere Werte</h2><div id="moreMetrics" class="metrics"></div></div>
+</section>
+
+<section id="entry" class="screen">
+  <div class="top"><div><h1>Tagesdaten</h1><p>Schnell auf dem iPhone erfassen.</p></div><button id="copyPrev" class="secondary">Vortag</button></div>
+  <form id="entryForm" class="panel">
+    <div class="formgrid">
+      <label><span>Datum</span><input id="date" type="date"></label>
+      <label><span>Aufnahme</span><input id="intake" type="number" inputmode="decimal"></label>
+      <label><span>TDEE</span><input id="tdee" type="number" inputmode="decimal"></label>
+      <label><span>Gewicht</span><input id="weight" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Protein</span><input id="protein" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Ballaststoffe</span><input id="fiber" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Schritte</span><input id="steps" type="number" inputmode="numeric"></label>
+      <label><span>Wasser</span><input id="water" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Schlaf</span><input id="sleep" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Training</span><input id="training" type="number" inputmode="numeric"></label>
+    </div>
+    <label><span>Trainingsart</span><input id="trainingType"></label>
+    <label><span>Notiz</span><textarea id="note"></textarea></label>
+    <div class="metric"><span>Live-Bilanz</span><b id="liveBalance">–</b></div>
+    <div class="actions"><button type="submit">Speichern</button><button type="button" id="deleteEntry" class="danger">Löschen</button></div>
+  </form>
+</section>
+
+<section id="calendarScreen" class="screen">
+  <div class="top"><div><h1>Kalender</h1><p><span class="green">− Defizit</span> · <span class="red">+ Überschuss</span></p></div><div><button id="prevMonth" class="secondary">‹</button><button id="nextMonth" class="secondary">›</button></div></div>
+  <div class="panel"><h2 id="monthTitle"></h2><div id="calendar" class="calendar"></div></div>
+</section>
+
+<section id="dayScreen" class="screen">
+  <button id="backToCalendar" class="backcalendar">← Zurück zum Kalender</button>
+  <div id="dayHero" class="dayhero neutral">
+    <div class="herohead"><div><div id="dayDate" class="eyebrow"></div><h1 id="dayStatus">Tagesübersicht</h1></div><div id="dayScore" class="scorechip">–</div></div>
+    <div id="dayBalance" class="big">–</div>
+    <p id="dayMessage">–</p>
+    <div class="progress"><i id="dayProgress" style="width:0%"></i></div>
+  </div>
+
+  <div class="sectioncard">
+    <div class="sectiontitle"><h2>Ernährung</h2><span class="icon">🥗</span></div>
+    <div id="nutritionGrid" class="healthgrid"></div>
+  </div>
+
+  <div class="sectioncard">
+    <div class="sectiontitle"><h2>Aktivität</h2><span class="icon">🏃</span></div>
+    <div id="activityGrid" class="healthgrid"></div>
+  </div>
+
+  <div class="sectioncard">
+    <div class="sectiontitle"><h2>Körper</h2><span class="icon">⚖️</span></div>
+    <div id="bodyGrid" class="healthgrid"></div>
+  </div>
+
+  <div class="sectioncard">
+    <div class="sectiontitle"><h2>Regeneration</h2><span class="icon">😴</span></div>
+    <div id="recoveryGrid" class="healthgrid"></div>
+  </div>
+
+  <div class="sectioncard">
+    <div class="sectiontitle"><h2>Notizen</h2><span class="icon">📝</span></div>
+    <div id="dayNote" class="note">Keine Notiz.</div>
+  </div>
+
+  <div class="dayactions">
+    <button id="editDay">✏️ Bearbeiten</button>
+    <button id="deleteDay" class="danger">🗑 Löschen</button>
+    <button id="calendarAgain" class="secondary full">← Zurück zum Kalender</button>
+  </div>
+</section>
+
+<section id="dataScreen" class="screen">
+  <div class="top"><div><h1>Daten</h1><p>Alle gespeicherten Tage.</p></div><button id="exportCsv">CSV</button></div>
+  <div id="dataList" class="list"></div>
+</section>
+
+<section id="moreScreen" class="screen">
+  <h1>Mehr</h1>
+  <div class="panel"><h2>Backup & Daten</h2><div class="actions"><button id="exportJson">JSON</button><button id="loadDemo">43 Datensätze laden</button><button id="clearAll" class="danger">Alles löschen</button></div><p>Auf dem iPhone in Safari öffnen und über Teilen → Zum Home-Bildschirm installieren.</p></div>
+</section>
+</main>
+
+<nav class="bottom">
+  <button data-s="home" class="on"><span>⌂</span>Übersicht</button>
+  <button data-s="entry"><span>＋</span>Erfassen</button>
+  <button data-s="calendarScreen"><span>▦</span>Kalender</button>
+  <button data-s="dataScreen"><span>≡</span>Daten</button>
+  <button data-s="moreScreen"><span>•••</span>Mehr</button>
+</nav>
+
+<script src="./mobile-v2.js?v=1"></script>
+</body>
+</html>
